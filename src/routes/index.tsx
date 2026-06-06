@@ -239,10 +239,10 @@ function Landing() {
             <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
               Join the VFarm community and start cultivating value today. Your one-time access code is generated at sign-up.
             </p>
-            <button className="mt-7 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-gold to-primary px-6 py-3 font-semibold text-primary-foreground shadow-gold transition-transform hover:scale-[1.02]">
+            <Link to="/auth" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-gold to-primary px-6 py-3 font-semibold text-primary-foreground shadow-gold transition-transform hover:scale-[1.02]">
               Create my Farmer account
               <ArrowRight className="h-4 w-4" />
-            </button>
+            </Link>
           </div>
         </div>
       </section>
