@@ -5,12 +5,11 @@ export const checkIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<{ isAdmin: boolean }> => {
     const { supabase, userId } = context;
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
+    // Cast: `user_roles` table is created by the Phase scaffold migration; types
+    // regenerate after the migration is approved.
+    const { data, error } = await (supabase as unknown as {
+      rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: boolean | null; error: unknown }>;
+    }).rpc("has_role", { _user_id: userId, _role: "admin" });
     if (error) return { isAdmin: false };
-    return { isAdmin: !!data };
+    return { isAdmin: data === true };
   });
