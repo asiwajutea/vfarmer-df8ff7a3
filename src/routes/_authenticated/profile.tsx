@@ -1,10 +1,8 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ArrowLeft, Camera, Check, Copy, Loader2, ShieldCheck, ShieldAlert, AtSign,
-  Phone, Globe, FileText, Sparkles, MapPin,
-} from "lucide-react";
-import logo from "@/assets/vfarm-logo.png";
+  Camera, Check, Copy, Loader2, ShieldCheck, ShieldAlert, AtSign,
+
 import { supabase } from "@/integrations/supabase/client";
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { COUNTRIES, COUNTRY_BY_CODE, detectCountry, findCountryByName, type Country } from "@/lib/countries";
