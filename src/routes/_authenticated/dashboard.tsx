@@ -1,12 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
-  Sprout, Wallet, Coins, ArrowLeftRight, Zap, LogOut, Bell, TrendingUp, Plus,
-  User as UserIcon, ShieldCheck,
+  Sprout, Wallet, Coins, ArrowLeftRight, Zap, TrendingUp, Plus,
 } from "lucide-react";
-import logo from "@/assets/vfarm-logo.png";
 import { supabase } from "@/integrations/supabase/client";
-import { resolveAvatarUrl } from "@/lib/avatar";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard · VFarmers" }] }),
