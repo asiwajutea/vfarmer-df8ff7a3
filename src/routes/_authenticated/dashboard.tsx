@@ -20,6 +20,13 @@ interface Profile {
   kyc_status: "unverified" | "pending" | "verified" | "rejected" | null;
 }
 
+type WalletKind = "primary" | "farming";
+interface WalletRow {
+  kind: WalletKind;
+  balance: string;
+  locked: string;
+}
+
 function Dashboard() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -27,19 +34,34 @@ function Dashboard() {
   const [email, setEmail] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [wallets, setWallets] = useState<Partial<Record<WalletKind, WalletRow>>>({});
+  const [rate, setRate] = useState<number>(1);
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       setEmail(user.email ?? "");
-      const { data } = await supabase
-        .from("profiles")
-        .select("display_name, avatar_url, username, kyc_status")
-        .eq("id", user.id)
-        .maybeSingle();
-      setProfile(data ?? { display_name: null, avatar_url: null, username: null, kyc_status: "unverified" });
-      setAvatarUrl(await resolveAvatarUrl(data?.avatar_url ?? null));
+      const [{ data: prof }, { data: ws }, { data: settings }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("display_name, avatar_url, username, kyc_status")
+          .eq("id", user.id)
+          .maybeSingle(),
+        supabase
+          .from("wallets")
+          .select("kind, balance, locked")
+          .eq("user_id", user.id),
+        supabase.from("app_settings").select("seed_to_usdt").maybeSingle(),
+      ]);
+      setProfile(prof ?? { display_name: null, avatar_url: null, username: null, kyc_status: "unverified" });
+      setAvatarUrl(await resolveAvatarUrl(prof?.avatar_url ?? null));
+      if (ws) {
+        const map: Partial<Record<WalletKind, WalletRow>> = {};
+        for (const w of ws as WalletRow[]) map[w.kind] = w;
+        setWallets(map);
+      }
+      if (settings?.seed_to_usdt) setRate(Number(settings.seed_to_usdt));
     })();
   }, []);
 
