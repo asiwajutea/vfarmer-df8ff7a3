@@ -20,6 +20,13 @@ interface Profile {
   kyc_status: "unverified" | "pending" | "verified" | "rejected" | null;
 }
 
+type WalletKind = "primary" | "farming";
+interface WalletRow {
+  kind: WalletKind;
+  balance: number;
+  locked: number;
+}
+
 function Dashboard() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -27,19 +34,34 @@ function Dashboard() {
   const [email, setEmail] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [wallets, setWallets] = useState<Partial<Record<WalletKind, WalletRow>>>({});
+  const [rate, setRate] = useState<number>(1);
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       setEmail(user.email ?? "");
-      const { data } = await supabase
-        .from("profiles")
-        .select("display_name, avatar_url, username, kyc_status")
-        .eq("id", user.id)
-        .maybeSingle();
-      setProfile(data ?? { display_name: null, avatar_url: null, username: null, kyc_status: "unverified" });
-      setAvatarUrl(await resolveAvatarUrl(data?.avatar_url ?? null));
+      const [{ data: prof }, { data: ws }, { data: settings }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("display_name, avatar_url, username, kyc_status")
+          .eq("id", user.id)
+          .maybeSingle(),
+        supabase
+          .from("wallets")
+          .select("kind, balance, locked")
+          .eq("user_id", user.id),
+        supabase.from("app_settings").select("seed_to_usdt").maybeSingle(),
+      ]);
+      setProfile(prof ?? { display_name: null, avatar_url: null, username: null, kyc_status: "unverified" });
+      setAvatarUrl(await resolveAvatarUrl(prof?.avatar_url ?? null));
+      if (ws) {
+        const map: Partial<Record<WalletKind, WalletRow>> = {};
+        for (const w of ws as WalletRow[]) map[w.kind] = w;
+        setWallets(map);
+      }
+      if (settings?.seed_to_usdt) setRate(Number(settings.seed_to_usdt));
     })();
   }, []);
 
@@ -141,14 +163,16 @@ function Dashboard() {
         <section className="mt-8 grid gap-4 md:grid-cols-2">
           <WalletCard
             title="Primary Wallet"
-            balance="0.00"
+            balance={Number(wallets.primary?.balance ?? 0)}
+            rate={rate}
             sub="Deposits and withdrawals"
             accent="gold"
             icon={Wallet}
           />
           <WalletCard
             title="Farming Wallet"
-            balance="0.00"
+            balance={Number(wallets.farming?.balance ?? 0)}
+            rate={rate}
             sub="Active farming activity"
             accent="primary"
             icon={Sprout}
@@ -193,14 +217,17 @@ function Dashboard() {
 }
 
 function WalletCard({
-  title, balance, sub, accent, icon: Icon,
+  title, balance, rate, sub, accent, icon: Icon,
 }: {
   title: string;
-  balance: string;
+  balance: number;
+  rate: number;
   sub: string;
   accent: "primary" | "gold";
   icon: React.ComponentType<{ className?: string }>;
 }) {
+  const seed = balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const usdt = (balance * rate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return (
     <div className="glass relative overflow-hidden rounded-3xl p-6">
       <div
@@ -220,10 +247,10 @@ function WalletCard({
       </div>
       <div className="relative mt-5">
         <div className="flex items-baseline gap-2">
-          <span className="text-4xl font-semibold tracking-tight">{balance}</span>
+          <span className="text-4xl font-semibold tracking-tight">{seed}</span>
           <span className="text-sm text-muted-foreground">Seed</span>
         </div>
-        <div className="mt-1 text-xs text-muted-foreground">≈ $0.00 USDT · {sub}</div>
+        <div className="mt-1 text-xs text-muted-foreground">≈ ${usdt} USDT · {sub}</div>
       </div>
     </div>
   );
