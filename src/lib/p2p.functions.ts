@@ -42,17 +42,22 @@ export const lookupRecipient = createServerFn({ method: "POST" })
 
     // Fallback: direct service-role lookup so a missing/restricted RPC doesn't break
     // recipient resolution. Sanitize the handle before using it in an `or` filter so
-    // user input can't alter the query.
+    // user input can't alter the query. Any failure here (e.g. service-role key not
+    // configured) is swallowed and treated as "no match" so the caller still receives
+    // a clean null and can show the not-found notice instead of a hard error.
     if (!row) {
       const safe = handle.replace(/[^a-zA-Z0-9_-]/g, "");
       if (safe) {
-        const { data: rows, error } = await supabaseAdmin
-          .from("profiles")
-          .select("id, display_name, username, avatar_url, referral_code")
-          .or(`username.ilike.${safe},referral_code.ilike.${safe}`)
-          .limit(5);
-        if (error) throw new Error(error.message);
-        row = (rows ?? []).find((r) => r.id !== context.userId) ?? null;
+        try {
+          const { data: rows } = await supabaseAdmin
+            .from("profiles")
+            .select("id, display_name, username, avatar_url, referral_code")
+            .or(`username.ilike.${safe},referral_code.ilike.${safe}`)
+            .limit(5);
+          row = (rows ?? []).find((r) => r.id !== context.userId) ?? null;
+        } catch {
+          row = null;
+        }
       }
     }
 
