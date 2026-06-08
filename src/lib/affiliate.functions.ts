@@ -92,7 +92,7 @@ export const getMyAffiliateSummary = createServerFn({ method: "GET" })
       referralCode: prof?.referral_code ?? null,
       gen1Count: g1Ids.length,
       gen2Count: g2Ids.length,
-      gen3Count,
+      gen3Count: g3Count,
       totalEarned: total,
       monthEarned: month,
       recent: (comms ?? []).map((c) => ({
