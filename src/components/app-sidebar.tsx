@@ -57,13 +57,21 @@ const account: Item[] = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: adminData } = useIsAdmin();
   const isAdmin = adminData?.isAdmin === true;
 
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
+
+  // On mobile the sidebar is an overlay sheet; close it after navigating so the
+  // selected page is visible.
+  const handleNavigate = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   const renderGroup = (label: string, items: Item[]) => (
     <SidebarGroup>
@@ -73,7 +81,7 @@ export function AppSidebar() {
           {items.map((item) => (
             <SidebarMenuItem key={item.url}>
               <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                <Link to={item.url} className="flex items-center gap-2">
+                <Link to={item.url} className="flex items-center gap-2" onClick={handleNavigate}>
                   <item.icon className="h-4 w-4" />
                   {!collapsed && <span>{item.title}</span>}
                 </Link>
@@ -88,7 +96,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-border/40">
-        <Link to="/dashboard" className="flex items-center gap-2 px-2 py-1.5">
+        <Link to="/dashboard" className="flex items-center gap-2 px-2 py-1.5" onClick={handleNavigate}>
           <img src={logo} alt="VFarmers" className="h-7 w-7 shrink-0" />
           {!collapsed && (
             <span className="text-base font-semibold tracking-tight">
