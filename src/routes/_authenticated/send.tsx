@@ -10,6 +10,7 @@ import {
   ArrowUpRight,
   Search,
   ArrowRight,
+  AlertCircle,
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -59,6 +60,8 @@ function SendPage() {
   // Recipient confirmation popup state
   const [pending, setPending] = useState<RecipientPreview | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  // Handle that failed to resolve, for the inline "no farmer found" notice.
+  const [notFound, setNotFound] = useState<string | null>(null);
 
   const { data: feeData } = useQuery({ queryKey: ["p2p-fee"], queryFn: () => feeFn() });
   const feePct = feeData?.feePct ?? 0;
@@ -100,14 +103,20 @@ function SendPage() {
       if (!r) {
         // No matching account for the entered username/referral code.
         setRecipient(null);
+        setNotFound(h);
         toast.error(`No farmer matches "${h}". Check the username or referral code and try again.`);
         return;
       }
       // Surface the matched account for explicit confirmation before sending.
+      setNotFound(null);
       setPending(r);
       setConfirmOpen(true);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error, h) => {
+      setRecipient(null);
+      setNotFound(h);
+      toast.error(e.message || "Couldn't look up that farmer. Please try again.");
+    },
   });
 
   const confirmRecipient = () => {
@@ -192,6 +201,7 @@ function SendPage() {
               onChange={(e) => {
                 setHandle(e.target.value);
                 setRecipient(null);
+                setNotFound(null);
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -213,6 +223,12 @@ function SendPage() {
               )}
             </Button>
           </div>
+          {notFound && !recipient && (
+            <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-destructive">
+              <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+              No farmer found for “{notFound}”. Check the username or referral code and try again.
+            </p>
+          )}
           {recipient && (
             <div className="mt-2 flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2.5">
               {recipient.avatar_url ? (
@@ -251,6 +267,9 @@ function SendPage() {
           {amt > 0 && (
             <div className="rounded-lg border border-border/60 bg-card/40 px-3 py-2 text-xs">
               Total debit: <span className="font-semibold">{total.toLocaleString()}</span> Seed
+              {rate > 0 && (
+                <span className="text-muted-foreground"> ≈ {fmt(total * rate)} USDT</span>
+              )}
             </div>
           )}
         </div>
