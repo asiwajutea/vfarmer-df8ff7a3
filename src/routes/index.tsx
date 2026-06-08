@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   Sprout, Wallet, Coins, Shield, ArrowLeftRight, Ticket,
-  Zap, Bell, TrendingUp, Users, ArrowRight, CheckCircle2,
+  Zap, Bell, TrendingUp, Users, ArrowRight, CheckCircle2, LayoutDashboard,
 } from "lucide-react";
 import logo from "@/assets/vfarm-logo.png";
 import { Ticker } from "@/components/Ticker";
 import { StatCard } from "@/components/StatCard";
 import { FeatureCard } from "@/components/FeatureCard";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,6 +23,23 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const [me, setMe] = useState<{ name: string; avatar: string | null } | null>(null);
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data }) => {
+      const u = data.session?.user;
+      if (!u) return;
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("display_name, avatar_url, username")
+        .eq("id", u.id)
+        .maybeSingle();
+      setMe({
+        name: prof?.display_name || prof?.username || u.email?.split("@")[0] || "Farmer",
+        avatar: prof?.avatar_url ?? null,
+      });
+    });
+  }, []);
+
   return (
     <div className="min-h-screen bg-hero">
       {/* Nav */}
@@ -38,12 +57,36 @@ function Landing() {
             <a href="#stats" className="transition-colors hover:text-foreground">Ecosystem</a>
           </nav>
           <div className="flex items-center gap-2">
-            <Link to="/auth" className="hidden rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:block">
-              Sign in
-            </Link>
-            <Link to="/auth" className="rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-medium text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]">
-              Become a Farmer
-            </Link>
+            {me ? (
+              <>
+                <div className="hidden items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-primary sm:flex">
+                  {me.avatar ? (
+                    <img src={me.avatar} alt="" className="h-5 w-5 rounded-full object-cover" />
+                  ) : (
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/20 text-[10px] font-semibold">
+                      {me.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span>Signed in as {me.name}</span>
+                </div>
+                <Link
+                  to="/dashboard"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-medium text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  Go to Dashboard
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/auth" className="hidden rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:block">
+                  Sign in
+                </Link>
+                <Link to="/auth" className="rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-medium text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]">
+                  Become a Farmer
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
