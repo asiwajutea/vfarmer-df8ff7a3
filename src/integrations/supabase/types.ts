@@ -517,6 +517,42 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["notification_kind"]
+          read_at: string | null
+          ref_id: string | null
+          ref_table: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["notification_kind"]
+          read_at?: string | null
+          ref_id?: string | null
+          ref_table?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["notification_kind"]
+          read_at?: string | null
+          ref_id?: string | null
+          ref_table?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       p2p_transfers: {
         Row: {
           amount: number
@@ -782,6 +818,7 @@ export type Database = {
           username: string
         }[]
       }
+      fmt_seed: { Args: { p_amount: number }; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
       get_uplines: {
         Args: { _user_id: string }
@@ -806,6 +843,19 @@ export type Database = {
           id: string
           username: string
         }[]
+      }
+      mark_all_notifications_read: { Args: never; Returns: number }
+      mark_notification_read: { Args: { p_id: string }; Returns: undefined }
+      notify_user: {
+        Args: {
+          p_body?: string
+          p_kind: Database["public"]["Enums"]["notification_kind"]
+          p_ref_id?: string
+          p_ref_table?: string
+          p_title: string
+          p_user: string
+        }
+        Returns: undefined
       }
       p2p_send: {
         Args: { p_amount: number; p_note?: string; p_receiver_id: string }
@@ -886,6 +936,24 @@ export type Database = {
         | "affiliate_commission"
         | "maintenance_fee"
       maintenance_status: "due" | "paid" | "waived" | "overdue"
+      notification_kind:
+        | "cycle_matured"
+        | "cycle_reaped"
+        | "deposit_approved"
+        | "deposit_rejected"
+        | "withdrawal_approved"
+        | "withdrawal_rejected"
+        | "transfer_received"
+        | "escrow_created"
+        | "escrow_accepted"
+        | "escrow_released"
+        | "escrow_cancelled"
+        | "escrow_disputed"
+        | "escrow_refunded"
+        | "affiliate_commission"
+        | "maintenance_due"
+        | "admin_balance_adjusted"
+        | "system"
       request_status: "pending" | "approved" | "rejected"
       transfer_status: "completed" | "failed"
       wallet_kind: "primary" | "farming"
@@ -1056,6 +1124,25 @@ export const Constants = {
         "maintenance_fee",
       ],
       maintenance_status: ["due", "paid", "waived", "overdue"],
+      notification_kind: [
+        "cycle_matured",
+        "cycle_reaped",
+        "deposit_approved",
+        "deposit_rejected",
+        "withdrawal_approved",
+        "withdrawal_rejected",
+        "transfer_received",
+        "escrow_created",
+        "escrow_accepted",
+        "escrow_released",
+        "escrow_cancelled",
+        "escrow_disputed",
+        "escrow_refunded",
+        "affiliate_commission",
+        "maintenance_due",
+        "admin_balance_adjusted",
+        "system",
+      ],
       request_status: ["pending", "approved", "rejected"],
       transfer_status: ["completed", "failed"],
       wallet_kind: ["primary", "farming"],
