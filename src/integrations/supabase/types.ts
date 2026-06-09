@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          detail: Json
+          id: string
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       affiliate_commissions: {
         Row: {
           amount: number
@@ -82,6 +112,9 @@ export type Database = {
           id: boolean
           maint_fee_day: number
           maint_fee_seed: number
+          maint_message: string
+          maint_mode_global: boolean
+          maint_pages: Json
           max_cycle_seed: number
           min_cycle_seed: number
           min_deposit_seed: number
@@ -89,6 +122,8 @@ export type Database = {
           p2p_fee_pct: number
           referral_bonus_pct: number
           seed_to_usdt: number
+          ticker_enabled: boolean
+          ticker_items: Json
           updated_at: string
           withdraw_fee_pct: number
         }
@@ -105,6 +140,9 @@ export type Database = {
           id?: boolean
           maint_fee_day?: number
           maint_fee_seed?: number
+          maint_message?: string
+          maint_mode_global?: boolean
+          maint_pages?: Json
           max_cycle_seed?: number
           min_cycle_seed?: number
           min_deposit_seed?: number
@@ -112,6 +150,8 @@ export type Database = {
           p2p_fee_pct?: number
           referral_bonus_pct?: number
           seed_to_usdt?: number
+          ticker_enabled?: boolean
+          ticker_items?: Json
           updated_at?: string
           withdraw_fee_pct?: number
         }
@@ -128,6 +168,9 @@ export type Database = {
           id?: boolean
           maint_fee_day?: number
           maint_fee_seed?: number
+          maint_message?: string
+          maint_mode_global?: boolean
+          maint_pages?: Json
           max_cycle_seed?: number
           min_cycle_seed?: number
           min_deposit_seed?: number
@@ -135,6 +178,8 @@ export type Database = {
           p2p_fee_pct?: number
           referral_bonus_pct?: number
           seed_to_usdt?: number
+          ticker_enabled?: boolean
+          ticker_items?: Json
           updated_at?: string
           withdraw_fee_pct?: number
         }
@@ -336,6 +381,51 @@ export type Database = {
         }
         Relationships: []
       }
+      escrow_trades: {
+        Row: {
+          amount: number
+          created_at: string
+          dispute_reason: string | null
+          id: string
+          payee_id: string
+          payer_id: string
+          resolution: string | null
+          resolved_by: string | null
+          status: Database["public"]["Enums"]["escrow_status"]
+          terms: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          dispute_reason?: string | null
+          id?: string
+          payee_id: string
+          payer_id: string
+          resolution?: string | null
+          resolved_by?: string | null
+          status?: Database["public"]["Enums"]["escrow_status"]
+          terms?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          dispute_reason?: string | null
+          id?: string
+          payee_id?: string
+          payer_id?: string
+          resolution?: string | null
+          resolved_by?: string | null
+          status?: Database["public"]["Enums"]["escrow_status"]
+          terms?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ledger_entries: {
         Row: {
           amount: number
@@ -427,6 +517,42 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["notification_kind"]
+          read_at: string | null
+          ref_id: string | null
+          ref_table: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["notification_kind"]
+          read_at?: string | null
+          ref_id?: string | null
+          ref_table?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["notification_kind"]
+          read_at?: string | null
+          ref_id?: string | null
+          ref_table?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       p2p_transfers: {
         Row: {
           amount: number
@@ -467,6 +593,7 @@ export type Database = {
           country: string | null
           created_at: string
           display_name: string | null
+          frozen: boolean
           id: string
           kyc_status: Database["public"]["Enums"]["kyc_status"]
           phone: string | null
@@ -481,6 +608,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           display_name?: string | null
+          frozen?: boolean
           id: string
           kyc_status?: Database["public"]["Enums"]["kyc_status"]
           phone?: string | null
@@ -495,6 +623,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           display_name?: string | null
+          frozen?: boolean
           id?: string
           kyc_status?: Database["public"]["Enums"]["kyc_status"]
           phone?: string | null
@@ -605,7 +734,80 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_balance: {
+        Args: { p_amount: number; p_memo?: string; p_user: string }
+        Returns: undefined
+      }
+      admin_audit: {
+        Args: {
+          p_action: string
+          p_actor: string
+          p_detail?: Json
+          p_target_id: string
+          p_target_type: string
+        }
+        Returns: undefined
+      }
+      admin_cancel_cycle: { Args: { p_cycle_id: string }; Returns: undefined }
+      admin_create_coupon: {
+        Args: {
+          p_amount: number
+          p_code: string
+          p_expires?: string
+          p_max: number
+        }
+        Returns: string
+      }
+      admin_force_mature_cycle: {
+        Args: { p_cycle_id: string }
+        Returns: undefined
+      }
+      admin_review_request: {
+        Args: {
+          p_approve: boolean
+          p_id: string
+          p_note?: string
+          p_type: string
+        }
+        Returns: undefined
+      }
       admin_run_monthly_maintenance: { Args: never; Returns: number }
+      admin_set_coupon_active: {
+        Args: { p_active: boolean; p_id: string }
+        Returns: undefined
+      }
+      admin_set_frozen: {
+        Args: { p_frozen: boolean; p_user: string }
+        Returns: undefined
+      }
+      admin_set_maintenance: {
+        Args: { p_global: boolean; p_message: string; p_pages: Json }
+        Returns: undefined
+      }
+      admin_set_ticker: {
+        Args: { p_enabled: boolean; p_items: Json }
+        Returns: undefined
+      }
+      escrow_accept: { Args: { p_id: string }; Returns: undefined }
+      escrow_cancel: { Args: { p_id: string }; Returns: undefined }
+      escrow_create: {
+        Args: {
+          p_amount: number
+          p_payee_id: string
+          p_terms?: string
+          p_title?: string
+        }
+        Returns: string
+      }
+      escrow_dispute: {
+        Args: { p_id: string; p_reason?: string }
+        Returns: undefined
+      }
+      escrow_release: { Args: { p_id: string }; Returns: undefined }
+      escrow_resolve: {
+        Args: { p_id: string; p_release: boolean; p_resolution?: string }
+        Returns: undefined
+      }
       find_profile_by_handle: {
         Args: { handle: string }
         Returns: {
@@ -616,6 +818,7 @@ export type Database = {
           username: string
         }[]
       }
+      fmt_seed: { Args: { p_amount: number }; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
       get_uplines: {
         Args: { _user_id: string }
@@ -640,6 +843,19 @@ export type Database = {
           id: string
           username: string
         }[]
+      }
+      mark_all_notifications_read: { Args: never; Returns: number }
+      mark_notification_read: { Args: { p_id: string }; Returns: undefined }
+      notify_user: {
+        Args: {
+          p_body?: string
+          p_kind: Database["public"]["Enums"]["notification_kind"]
+          p_ref_id?: string
+          p_ref_table?: string
+          p_title: string
+          p_user: string
+        }
+        Returns: undefined
       }
       p2p_send: {
         Args: { p_amount: number; p_note?: string; p_receiver_id: string }
@@ -686,6 +902,13 @@ export type Database = {
       affiliate_source: "cycle" | "maintenance"
       app_role: "admin" | "moderator" | "user" | "farmer"
       cycle_status: "active" | "matured" | "reaped" | "cancelled"
+      escrow_status:
+        | "pending"
+        | "accepted"
+        | "released"
+        | "cancelled"
+        | "disputed"
+        | "refunded"
       kyc_status: "unverified" | "pending" | "verified" | "rejected"
       ledger_kind:
         | "deposit"
@@ -713,6 +936,24 @@ export type Database = {
         | "affiliate_commission"
         | "maintenance_fee"
       maintenance_status: "due" | "paid" | "waived" | "overdue"
+      notification_kind:
+        | "cycle_matured"
+        | "cycle_reaped"
+        | "deposit_approved"
+        | "deposit_rejected"
+        | "withdrawal_approved"
+        | "withdrawal_rejected"
+        | "transfer_received"
+        | "escrow_created"
+        | "escrow_accepted"
+        | "escrow_released"
+        | "escrow_cancelled"
+        | "escrow_disputed"
+        | "escrow_refunded"
+        | "affiliate_commission"
+        | "maintenance_due"
+        | "admin_balance_adjusted"
+        | "system"
       request_status: "pending" | "approved" | "rejected"
       transfer_status: "completed" | "failed"
       wallet_kind: "primary" | "farming"
@@ -847,6 +1088,14 @@ export const Constants = {
       affiliate_source: ["cycle", "maintenance"],
       app_role: ["admin", "moderator", "user", "farmer"],
       cycle_status: ["active", "matured", "reaped", "cancelled"],
+      escrow_status: [
+        "pending",
+        "accepted",
+        "released",
+        "cancelled",
+        "disputed",
+        "refunded",
+      ],
       kyc_status: ["unverified", "pending", "verified", "rejected"],
       ledger_kind: [
         "deposit",
@@ -875,6 +1124,25 @@ export const Constants = {
         "maintenance_fee",
       ],
       maintenance_status: ["due", "paid", "waived", "overdue"],
+      notification_kind: [
+        "cycle_matured",
+        "cycle_reaped",
+        "deposit_approved",
+        "deposit_rejected",
+        "withdrawal_approved",
+        "withdrawal_rejected",
+        "transfer_received",
+        "escrow_created",
+        "escrow_accepted",
+        "escrow_released",
+        "escrow_cancelled",
+        "escrow_disputed",
+        "escrow_refunded",
+        "affiliate_commission",
+        "maintenance_due",
+        "admin_balance_adjusted",
+        "system",
+      ],
       request_status: ["pending", "approved", "rejected"],
       transfer_status: ["completed", "failed"],
       wallet_kind: ["primary", "farming"],
