@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { usePwa } from "@/hooks/usePwa";
 
 function NotFoundComponent() {
@@ -128,7 +129,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { isOnline } = usePwa();
+  const { isOnline, showInstallPrompt, triggerInstall, dismissInstall } = usePwa();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -137,6 +138,10 @@ function RootComponent() {
       <Outlet />
       {/* Floating notifications anchored to the bottom-right of the viewport. */}
       <Toaster position="bottom-right" richColors closeButton />
+      {/* PWA install prompt — shown at bottom, non-intrusive */}
+      {showInstallPrompt && (
+        <InstallPrompt onInstall={triggerInstall} onDismiss={dismissInstall} />
+      )}
     </QueryClientProvider>
   );
 }
