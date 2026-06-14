@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Sprout, Mail, Lock, ArrowRight, Loader2, Ticket } from "lucide-react";
+import { Sprout, Mail, Lock, ArrowRight, Loader2, Ticket, Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import logo from "@/assets/vfarm-logo.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +32,7 @@ function AuthPage() {
   const [referralCode, setReferralCode] = useState((search.ref ?? "").toUpperCase());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -161,12 +162,14 @@ function AuthPage() {
             />
             <Field
               icon={Lock}
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={setPassword}
               required
               minLength={6}
+              onToggleVisibility={() => setShowPassword((v) => !v)}
+              visible={showPassword}
             />
 
             {error && (
@@ -246,6 +249,8 @@ function Field({
   onChange,
   required,
   minLength,
+  onToggleVisibility,
+  visible,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   type: string;
@@ -254,10 +259,12 @@ function Field({
   onChange: (v: string) => void;
   required?: boolean;
   minLength?: number;
+  onToggleVisibility?: () => void;
+  visible?: boolean;
 }) {
   return (
     <label className="flex items-center gap-2.5 rounded-xl border border-border bg-background/40 px-3.5 py-2.5 focus-within:border-primary/60">
-      <Icon className="h-4 w-4 text-muted-foreground" />
+      <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
       <input
         type={type}
         placeholder={placeholder}
@@ -267,6 +274,16 @@ function Field({
         minLength={minLength}
         className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
       />
+      {onToggleVisibility && (
+        <button
+          type="button"
+          onClick={onToggleVisibility}
+          aria-label={visible ? "Hide password" : "Show password"}
+          className="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      )}
     </label>
   );
 }
