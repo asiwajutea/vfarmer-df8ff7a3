@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import { OfflineBanner } from "@/components/OfflineBanner";
+import { usePwa } from "@/hooks/usePwa";
 
 function NotFoundComponent() {
   return (
@@ -78,24 +80,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
+      { title: "VFarmers" },
       { name: "description", content: "VFarmers is a digital farming ecosystem where users farm virtual Seed for community rewards." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
+      { name: "author", content: "VFarmers" },
+      // PWA
+      { name: "application-name", content: "VFarmers" },
+      { name: "apple-mobile-web-app-title", content: "VFarmers" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "theme-color", content: "#22c55e" },
+      // OG / Twitter
+      { property: "og:title", content: "VFarmers" },
       { property: "og:description", content: "VFarmers is a digital farming ecosystem where users farm virtual Seed for community rewards." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
+      { name: "twitter:title", content: "VFarmers" },
       { name: "twitter:description", content: "VFarmers is a digital farming ecosystem where users farm virtual Seed for community rewards." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/dbe1f6a6-d697-4489-88c6-a7299887e443/id-preview-f639b5e7--299939ed-b772-4f90-915f-88fc1906d274.lovable.app-1780769241270.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/dbe1f6a6-d697-4489-88c6-a7299887e443/id-preview-f639b5e7--299939ed-b772-4f90-915f-88fc1906d274.lovable.app-1780769241270.png" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.json" },
+      { rel: "icon", href: "/favicon.ico" },
     ],
   }),
   shellComponent: RootShell,
@@ -120,9 +128,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { isOnline } = usePwa();
 
   return (
     <QueryClientProvider client={queryClient}>
+      {!isOnline && <OfflineBanner />}
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       {/* Floating notifications anchored to the bottom-right of the viewport. */}

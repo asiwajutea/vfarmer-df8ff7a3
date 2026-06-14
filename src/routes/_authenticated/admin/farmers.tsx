@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Users, Search, Snowflake, ChevronRight } from "lucide-react";
+import { Users, Search, Snowflake, ChevronRight, ShieldCheck } from "lucide-react";
 
 import { adminListFarmers } from "@/lib/admin.functions";
 import { FarmerDetail } from "@/components/admin/FarmerDetail";
@@ -47,7 +47,9 @@ function AdminFarmers() {
         </div>
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Farmers</h1>
-          <p className="text-sm text-muted-foreground">Search farmers, adjust balances, and freeze accounts.</p>
+          <p className="text-sm text-muted-foreground">
+            {q.data ? `${q.data.length} registered` : "Search farmers, adjust balances, and freeze accounts."}
+          </p>
         </div>
       </header>
 
@@ -88,6 +90,11 @@ function AdminFarmers() {
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 truncate text-sm font-medium">
                           {f.display_name ?? f.username ?? "Farmer"}
+                          {f.is_admin && (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                              <ShieldCheck className="h-3 w-3" /> Admin
+                            </span>
+                          )}
                           {f.frozen && (
                             <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-[10px] font-medium text-sky-400">
                               <Snowflake className="h-3 w-3" /> Frozen

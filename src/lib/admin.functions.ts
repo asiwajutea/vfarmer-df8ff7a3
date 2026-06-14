@@ -45,6 +45,7 @@ export type AdminFarmerRow = FarmerLite & {
   created_at: string;
   primary_balance: number;
   farming_balance: number;
+  is_admin: boolean;
 };
 
 export type AdminLedgerRow = {
@@ -266,7 +267,7 @@ export const adminListFarmers = createServerFn({ method: "GET" })
       .from("profiles")
       .select("id, display_name, username, avatar_url, country, frozen, kyc_status, created_at")
       .order("created_at", { ascending: false })
-      .limit(50);
+      .limit(200);
 
     const term = data.search?.trim().replace(/[^a-zA-Z0-9_@.-]/g, "");
     if (term) {
@@ -278,17 +279,20 @@ export const adminListFarmers = createServerFn({ method: "GET" })
     const ids = (profiles ?? []).map((p) => p.id);
 
     const balances = new Map<string, { primary: number; farming: number }>();
+    const adminIds = new Set<string>();
+
     if (ids.length) {
-      const { data: wallets } = await sb
-        .from("wallets")
-        .select("user_id, kind, balance")
-        .in("user_id", ids);
+      const [{ data: wallets }, { data: roles }] = await Promise.all([
+        sb.from("wallets").select("user_id, kind, balance").in("user_id", ids),
+        sb.from("user_roles").select("user_id").eq("role", "admin").in("user_id", ids),
+      ]);
       for (const w of wallets ?? []) {
         const entry = balances.get(w.user_id) ?? { primary: 0, farming: 0 };
         if (w.kind === "primary") entry.primary = Number(w.balance);
         else if (w.kind === "farming") entry.farming = Number(w.balance);
         balances.set(w.user_id, entry);
       }
+      for (const r of roles ?? []) adminIds.add(r.user_id);
     }
 
     return (profiles ?? []).map((p) => ({
@@ -302,6 +306,7 @@ export const adminListFarmers = createServerFn({ method: "GET" })
       created_at: p.created_at,
       primary_balance: balances.get(p.id)?.primary ?? 0,
       farming_balance: balances.get(p.id)?.farming ?? 0,
+      is_admin: adminIds.has(p.id),
     }));
   });
 
