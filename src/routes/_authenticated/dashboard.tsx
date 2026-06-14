@@ -30,7 +30,8 @@ function Dashboard() {
         supabase.from("wallets").select("kind, balance, locked").eq("user_id", user.id),
         supabase.from("app_settings").select("seed_to_usdt").maybeSingle(),
       ]);
-      setName(prof?.display_name || user.email?.split("@")[0] || "Farmer");
+      const fullName = prof?.display_name || user.email?.split("@")[0] || "Farmer";
+      setName(fullName.split(" ")[0]);
       if (ws) {
         const map: Partial<Record<WalletKind, WalletRow>> = {};
         for (const w of ws as WalletRow[]) map[w.kind] = w;
