@@ -120,9 +120,6 @@ export type Database = {
           min_deposit_seed: number
           min_withdraw_seed: number
           p2p_fee_pct: number
-          payout_anchor: string
-          payout_lock_enabled: boolean
-          payout_timezone: string
           referral_bonus_pct: number
           seed_to_usdt: number
           ticker_enabled: boolean
@@ -151,9 +148,6 @@ export type Database = {
           min_deposit_seed?: number
           min_withdraw_seed?: number
           p2p_fee_pct?: number
-          payout_anchor?: string
-          payout_lock_enabled?: boolean
-          payout_timezone?: string
           referral_bonus_pct?: number
           seed_to_usdt?: number
           ticker_enabled?: boolean
@@ -182,9 +176,6 @@ export type Database = {
           min_deposit_seed?: number
           min_withdraw_seed?: number
           p2p_fee_pct?: number
-          payout_anchor?: string
-          payout_lock_enabled?: boolean
-          payout_timezone?: string
           referral_bonus_pct?: number
           seed_to_usdt?: number
           ticker_enabled?: boolean
@@ -754,10 +745,8 @@ export type Database = {
         Row: {
           admin_note: string | null
           amount: number
-          amount_usdt: number | null
           created_at: string
           id: string
-          locked_rate: number | null
           method: string
           proof_url: string | null
           status: Database["public"]["Enums"]["request_status"]
@@ -767,10 +756,8 @@ export type Database = {
         Insert: {
           admin_note?: string | null
           amount: number
-          amount_usdt?: number | null
           created_at?: string
           id?: string
-          locked_rate?: number | null
           method: string
           proof_url?: string | null
           status?: Database["public"]["Enums"]["request_status"]
@@ -780,10 +767,8 @@ export type Database = {
         Update: {
           admin_note?: string | null
           amount?: number
-          amount_usdt?: number | null
           created_at?: string
           id?: string
-          locked_rate?: number | null
           method?: string
           proof_url?: string | null
           status?: Database["public"]["Enums"]["request_status"]
@@ -877,10 +862,6 @@ export type Database = {
       }
       admin_set_maintenance: {
         Args: { p_global: boolean; p_message: string; p_pages: Json }
-        Returns: undefined
-      }
-      admin_set_payout: {
-        Args: { p_anchor: string; p_lock_enabled: boolean; p_timezone: string }
         Returns: undefined
       }
       admin_set_ticker: {
