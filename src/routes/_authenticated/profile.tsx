@@ -312,7 +312,7 @@ function ProfilePage() {
           <div className="flex flex-col items-center gap-5 sm:flex-row">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border bg-card">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                <img src={avatarUrl} alt="Your VFarmers profile avatar" className="h-full w-full object-cover" />
               ) : (
                 <span className="text-2xl font-semibold text-primary">
                   {(displayName || email || "F").charAt(0).toUpperCase()}

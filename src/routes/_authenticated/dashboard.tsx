@@ -5,7 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { MaintenanceCard } from "@/components/maintenance/MaintenanceCard";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Dashboard · VFarmers" },
+      { name: "description", content: "Your VFarmers dashboard: wallet balances, active farming cycles and quick actions." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: Dashboard,
 });
 

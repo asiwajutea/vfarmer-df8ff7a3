@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link, useSearch } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Sprout, Mail, Lock, ArrowRight, Loader2, Ticket, Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import logo from "@/assets/vfarm-logo.png";
@@ -15,8 +15,10 @@ export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Sign in · VFarmers" },
-      { name: "description", content: "Sign in or create your VFarmers Farmer account." },
+      { title: "Sign in or Join · VFarmers" },
+      { name: "description", content: "Sign in to your VFarmers account or register as a Farmer to grow Seeds, track farming cycles, and earn community rewards." },
+      { property: "og:title", content: "Sign in or Join VFarmers" },
+      { property: "og:description", content: "Create your Farmer account and start growing Seeds in the VFarmers community ecosystem." },
     ],
   }),
   component: AuthPage,
@@ -178,7 +180,8 @@ function AuthPage() {
                   <Field
                     icon={Sprout}
                     type="text"
-                    placeholder="Farmer full name"
+                    label="Full name"
+                  placeholder="Farmer full name"
                     value={fullName}
                     onChange={setFullName}
                     required
@@ -190,6 +193,7 @@ function AuthPage() {
                 <Field
                   icon={Ticket}
                   type="text"
+                  label="Affiliate code (optional)"
                   placeholder="Affiliate code (optional)"
                   value={referralCode}
                   onChange={(v) => setReferralCode(v.toUpperCase())}
@@ -200,7 +204,8 @@ function AuthPage() {
             <Field
               icon={Mail}
               type="email"
-              placeholder="you@example.com"
+              label="Email address"
+                  placeholder="you@example.com"
               value={email}
               onChange={setEmail}
               required
@@ -208,7 +213,8 @@ function AuthPage() {
             <Field
               icon={Lock}
               type={showPassword ? "text" : "password"}
-              placeholder="Password"
+              label="Password"
+                  placeholder="Password"
               value={password}
               onChange={setPassword}
               required
@@ -288,6 +294,7 @@ function AuthPage() {
 
 function Field({
   icon: Icon,
+  label,
   type,
   placeholder,
   value,
@@ -298,6 +305,7 @@ function Field({
   visible,
 }: {
   icon: React.ComponentType<{ className?: string }>;
+  label: string;
   type: string;
   placeholder: string;
   value: string;
@@ -307,10 +315,13 @@ function Field({
   onToggleVisibility?: () => void;
   visible?: boolean;
 }) {
+  const inputId = useId();
   return (
-    <label className="flex items-center gap-2.5 rounded-xl border border-border bg-background/40 px-3.5 py-2.5 focus-within:border-primary/60">
+    <label htmlFor={inputId} className="flex items-center gap-2.5 rounded-xl border border-border bg-background/40 px-3.5 py-2.5 focus-within:border-primary/60">
       <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+      <span className="sr-only">{label}</span>
       <input
+        id={inputId}
         type={type}
         placeholder={placeholder}
         value={value}
