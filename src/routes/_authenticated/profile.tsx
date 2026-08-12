@@ -19,7 +19,13 @@ import type { Database } from "@/integrations/supabase/types";
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 export const Route = createFileRoute("/_authenticated/profile")({
-  head: () => ({ meta: [{ title: "Profile · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Profile · VFarmers" },
+      { name: "description", content: "Manage your VFarmers Farmer profile, avatar, country and contact details." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: ProfilePage,
 });
 

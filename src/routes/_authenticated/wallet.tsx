@@ -13,7 +13,13 @@ import { Loadable } from "@/components/ui/loadable";
 import { ListSkeleton } from "@/components/skeletons/ListSkeleton";
 
 export const Route = createFileRoute("/_authenticated/wallet")({
-  head: () => ({ meta: [{ title: "Wallet · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Wallet · VFarmers" },
+      { name: "description", content: "Check your Primary and Farming wallet balances and recent VFarmers activity." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: WalletPage,
 });
 

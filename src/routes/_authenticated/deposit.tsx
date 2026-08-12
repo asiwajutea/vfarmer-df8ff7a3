@@ -5,7 +5,13 @@ import { RequestsHistory } from "@/components/wallet/RequestsHistory";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export const Route = createFileRoute("/_authenticated/deposit")({
-  head: () => ({ meta: [{ title: "Deposit · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Deposit · VFarmers" },
+      { name: "description", content: "Deposit USDT to credit Seeds to your VFarmers Primary wallet." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: DepositPage,
 });
 

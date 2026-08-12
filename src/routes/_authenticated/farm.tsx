@@ -24,7 +24,13 @@ import {
 } from "@/lib/farm.functions";
 
 export const Route = createFileRoute("/_authenticated/farm")({
-  head: () => ({ meta: [{ title: "Farm · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Farm · VFarmers" },
+      { name: "description", content: "Start farming cycles with boosters and reap matured Seed rewards on VFarmers." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: FarmPage,
 });
 
