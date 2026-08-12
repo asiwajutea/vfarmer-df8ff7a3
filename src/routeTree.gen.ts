@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RiskDisclosureRouteImport } from './routes/risk-disclosure'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -53,6 +54,11 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RiskDisclosureRoute = RiskDisclosureRouteImport.update({
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/risk-disclosure': typeof RiskDisclosureRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
@@ -272,6 +279,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/risk-disclosure': typeof RiskDisclosureRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/affiliate': typeof AuthenticatedAffiliateRoute
@@ -308,6 +316,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/risk-disclosure': typeof RiskDisclosureRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
@@ -346,6 +355,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/privacy'
     | '/risk-disclosure'
+    | '/sitemap.xml'
     | '/terms'
     | '/verify-email'
     | '/admin'
@@ -382,6 +392,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/privacy'
     | '/risk-disclosure'
+    | '/sitemap.xml'
     | '/terms'
     | '/verify-email'
     | '/affiliate'
@@ -417,6 +428,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/privacy'
     | '/risk-disclosure'
+    | '/sitemap.xml'
     | '/terms'
     | '/verify-email'
     | '/_authenticated/admin'
@@ -455,6 +467,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   PrivacyRoute: typeof PrivacyRoute
   RiskDisclosureRoute: typeof RiskDisclosureRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   ApiPublicTestCreditRoute: typeof ApiPublicTestCreditRoute
@@ -474,6 +487,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/risk-disclosure': {
@@ -799,6 +819,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   PrivacyRoute: PrivacyRoute,
   RiskDisclosureRoute: RiskDisclosureRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   ApiPublicTestCreditRoute: ApiPublicTestCreditRoute,
