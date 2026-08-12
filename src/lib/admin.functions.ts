@@ -350,6 +350,7 @@ export const adminGetFarmer = createServerFn({ method: "GET" })
     return {
       farmer: {
         id: p.id,
+        is_admin: (roles ?? []).length > 0,
         display_name: p.display_name,
         username: p.username,
         avatar_url: p.avatar_url,
