@@ -11,18 +11,28 @@ export type ReferrerInfo = {
   avatar_url: string | null;
 } | null;
 
-// Public — used live during signup. Uses anon client (no auth required).
+// Public — used live during signup (no session yet). The underlying RPC is NOT
+// callable by anonymous visitors; it runs here server-side with elevated
+// privileges and returns only non-sensitive display fields.
 export const lookupReferrer = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ code: z.string().min(1).max(32) }).parse(d))
   .handler(async ({ data }): Promise<ReferrerInfo> => {
-    const url = process.env.SUPABASE_URL!;
-    const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
-    const client = createClient<Database>(url, key, { auth: { persistSession: false } });
-    const { data: rows, error } = await client.rpc("lookup_referrer", { _code: data.code });
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin.rpc("lookup_referrer", {
+      _code: data.code,
+    });
     if (error) return null;
     const r = Array.isArray(rows) ? rows[0] : rows;
-    return r ?? null;
+    return r
+      ? {
+          id: r.id,
+          display_name: r.display_name ?? null,
+          username: r.username ?? null,
+          avatar_url: r.avatar_url ?? null,
+        }
+      : null;
   });
+
 
 // Returns the referral code for the platform default referrer (dakintuyi@gmail.com).
 // Called silently at signup when no affiliate code is provided — never shown to user.
