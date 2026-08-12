@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /wallet
+Disallow: /farm
+Disallow: /affiliate
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://vfarmer.lovable.app/sitemap.xml
