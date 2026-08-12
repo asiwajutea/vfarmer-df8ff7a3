@@ -17,7 +17,13 @@ import {
 import { notificationMeta, relativeTime } from "@/lib/notification-meta";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
-  head: () => ({ meta: [{ title: "Notifications · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Notifications · VFarmers" },
+      { name: "description", content: "Real-time VFarmers alerts for cycle reaps, transfers, deposits and commissions." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: NotificationsPage,
 });
 

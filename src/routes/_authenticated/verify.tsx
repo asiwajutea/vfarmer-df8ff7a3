@@ -20,7 +20,13 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/verify")({
-  head: () => ({ meta: [{ title: "Verify identity · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Verify identity · VFarmers" },
+      { name: "description", content: "Submit your identity documents for VFarmers account verification." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: VerifyPage,
 });
 

@@ -13,7 +13,13 @@ import { Loadable } from "@/components/ui/loadable";
 import { ListSkeleton } from "@/components/skeletons/ListSkeleton";
 
 export const Route = createFileRoute("/_authenticated/coupons")({
-  head: () => ({ meta: [{ title: "Coupons · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Coupons · VFarmers" },
+      { name: "description", content: "Redeem VFarmers coupon codes for Seeds and review your redemption history." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: CouponsPage,
 });
 

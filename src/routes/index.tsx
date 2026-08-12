@@ -17,6 +17,33 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "VFarmers is a community-driven farming ecosystem where members grow Seeds, earn rewards, and trade peer-to-peer with full transparency." },
       { property: "og:title", content: "VFarmers — Grow Seeds, Reap Rewards" },
       { property: "og:description", content: "Join thousands of Farmers cultivating value in a transparent, community-powered ecosystem." },
+      { property: "og:url", content: "https://vfarmer.lovable.app/" },
+    ],
+    links: [{ rel: "canonical", href: "https://vfarmer.lovable.app/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              name: "VFarmers",
+              url: "https://vfarmer.lovable.app/",
+              logo: "https://vfarmer.lovable.app/icons/icon-512.png",
+              description:
+                "VFarmers is a community-driven digital farming ecosystem where members grow virtual Seeds and earn community rewards.",
+            },
+            {
+              "@type": "WebSite",
+              name: "VFarmers",
+              url: "https://vfarmer.lovable.app/",
+              description:
+                "Community farming ecosystem for growing Seeds, running farming cycles and trading peer-to-peer.",
+            },
+          ],
+        }),
+      },
     ],
   }),
   component: Landing,

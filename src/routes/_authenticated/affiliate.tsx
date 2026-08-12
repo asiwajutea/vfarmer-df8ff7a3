@@ -10,7 +10,13 @@ import { Loadable } from "@/components/ui/loadable";
 import { SimpleRowsSkeleton } from "@/components/skeletons/ListSkeleton";
 
 export const Route = createFileRoute("/_authenticated/affiliate")({
-  head: () => ({ meta: [{ title: "Affiliate · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Affiliate · VFarmers" },
+      { name: "description", content: "Track your three generations of VFarmers downlines, commissions and share links." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: AffiliatePage,
 });
 

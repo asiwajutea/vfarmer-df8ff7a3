@@ -37,7 +37,13 @@ import {
 } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/send")({
-  head: () => ({ meta: [{ title: "Send · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Send Seed · VFarmers" },
+      { name: "description", content: "Send Seed instantly to another VFarmers Farmer by username or handle." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: SendPage,
 });
 

@@ -14,7 +14,13 @@ import { fmtAmount } from "@/lib/currency";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export const Route = createFileRoute("/_authenticated/withdraw")({
-  head: () => ({ meta: [{ title: "Withdraw · VFarmers" }] }),
+  head: () => ({
+    meta: [
+      { title: "Withdraw · VFarmers" },
+      { name: "description", content: "Withdraw USDT from your VFarmers Primary wallet balance." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: WithdrawPage,
 });
 
