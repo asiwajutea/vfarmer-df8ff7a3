@@ -699,6 +699,21 @@ export type Database = {
           },
         ]
       }
+      test_credit_nonces: {
+        Row: {
+          nonce: string
+          used_at: string
+        }
+        Insert: {
+          nonce: string
+          used_at?: string
+        }
+        Update: {
+          nonce?: string
+          used_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
