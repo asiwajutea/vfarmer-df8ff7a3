@@ -106,7 +106,9 @@ export const Route = createFileRoute("/api/public/test-credit")({
           return json({ ok: false, error: "invalid_signature" }, 401);
         }
 
-        // 3. Parse + reject stale timestamps (replay hardening).
+        // 3. Parse + reject stale timestamps (replay hardening). Both `ts` and
+        //    `nonce` are MANDATORY: without them a captured signed body could be
+        //    replayed forever to mint unlimited Seed.
         let parsed: unknown;
         try {
           parsed = JSON.parse(rawBody);
@@ -114,8 +116,24 @@ export const Route = createFileRoute("/api/public/test-credit")({
           return json({ ok: false, error: "invalid_json" }, 400);
         }
         const ts = (parsed as TestCreditPayload)?.ts;
-        if (typeof ts === "number" && Math.abs(Date.now() - ts) > MAX_SKEW_MS) {
+        if (typeof ts !== "number" || !Number.isFinite(ts)) {
+          return json({ ok: false, error: "missing_timestamp" }, 401);
+        }
+        if (Math.abs(Date.now() - ts) > MAX_SKEW_MS) {
           return json({ ok: false, error: "stale_timestamp" }, 401);
+        }
+        const nonce = (parsed as TestCreditPayload)?.nonce;
+        if (typeof nonce !== "string" || nonce.trim().length < 8) {
+          return json({ ok: false, error: "missing_nonce" }, 401);
+        }
+
+        // 3b. Burn the one-time nonce. The primary key makes the insert fail on
+        //     any repeat, so each signed request is accepted exactly once.
+        const { error: nonceErr } = await supabaseAdmin
+          .from("test_credit_nonces")
+          .insert({ nonce: nonce.trim() });
+        if (nonceErr) {
+          return json({ ok: false, error: "replayed_nonce" }, 401);
         }
 
         // 4. Validate fields (Req 10.5).
