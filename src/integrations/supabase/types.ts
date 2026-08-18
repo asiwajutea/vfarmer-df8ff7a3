@@ -1051,19 +1051,7 @@ export type Database = {
       }
     }
     Views: {
-      farm_leaderboard: {
-        Row: {
-          avatar_url: string | null
-          badges: number | null
-          display_name: string | null
-          level: number | null
-          rank: number | null
-          streak_count: number | null
-          user_id: string | null
-          xp: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       admin_adjust_balance: {
@@ -1200,6 +1188,19 @@ export type Database = {
       farm_check_achievements: { Args: { _uid: string }; Returns: string[] }
       farm_checkin: { Args: never; Returns: Json }
       farm_ensure_profile: { Args: { _uid: string }; Returns: undefined }
+      farm_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          avatar_url: string
+          badges: number
+          display_name: string
+          level: number
+          rank: number
+          streak_count: number
+          user_id: string
+          xp: number
+        }[]
+      }
       farm_level_for_xp: { Args: { p_xp: number }; Returns: number }
       farm_sync: { Args: never; Returns: Json }
       find_profile_by_handle: {
