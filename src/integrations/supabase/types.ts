@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          code: string
+          description: string
+          icon: string
+          label: string
+          metric: string
+          sort_order: number
+          threshold: number
+          xp: number
+        }
+        Insert: {
+          code: string
+          description: string
+          icon?: string
+          label: string
+          metric: string
+          sort_order?: number
+          threshold: number
+          xp?: number
+        }
+        Update: {
+          code?: string
+          description?: string
+          icon?: string
+          label?: string
+          metric?: string
+          sort_order?: number
+          threshold?: number
+          xp?: number
+        }
+        Relationships: []
+      }
       admin_audit_log: {
         Row: {
           action: string
@@ -438,6 +471,42 @@ export type Database = {
         }
         Relationships: []
       }
+      farm_profiles: {
+        Row: {
+          created_at: string
+          last_checkin_date: string | null
+          level: number
+          lifetime_care: number
+          lifetime_harvests: number
+          streak_count: number
+          updated_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          created_at?: string
+          last_checkin_date?: string | null
+          level?: number
+          lifetime_care?: number
+          lifetime_harvests?: number
+          streak_count?: number
+          updated_at?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          created_at?: string
+          last_checkin_date?: string | null
+          level?: number
+          lifetime_care?: number
+          lifetime_harvests?: number
+          streak_count?: number
+          updated_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
       kyc_documents: {
         Row: {
           admin_note: string | null
@@ -643,6 +712,85 @@ export type Database = {
         }
         Relationships: []
       }
+      plot_care: {
+        Row: {
+          action: string
+          created_at: string
+          cycle_id: string
+          id: string
+          user_id: string
+          xp_awarded: number
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          cycle_id: string
+          id?: string
+          user_id: string
+          xp_awarded?: number
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          cycle_id?: string
+          id?: string
+          user_id?: string
+          xp_awarded?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plot_care_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "cycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plot_state: {
+        Row: {
+          care_score: number
+          cycle_id: string
+          event_code: string | null
+          event_expires_at: string | null
+          event_rolled_at: string | null
+          event_started_at: string | null
+          health: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          care_score?: number
+          cycle_id: string
+          event_code?: string | null
+          event_expires_at?: string | null
+          event_rolled_at?: string | null
+          event_started_at?: string | null
+          health?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          care_score?: number
+          cycle_id?: string
+          event_code?: string | null
+          event_expires_at?: string | null
+          event_rolled_at?: string | null
+          event_started_at?: string | null
+          health?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plot_state_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: true
+            referencedRelation: "cycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -699,6 +847,74 @@ export type Database = {
           },
         ]
       }
+      quest_progress: {
+        Row: {
+          completed_at: string | null
+          day: string
+          id: string
+          progress: number
+          quest_code: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          day?: string
+          id?: string
+          progress?: number
+          quest_code: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          day?: string
+          id?: string
+          progress?: number
+          quest_code?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quest_progress_quest_code_fkey"
+            columns: ["quest_code"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      quests: {
+        Row: {
+          active: boolean
+          code: string
+          description: string
+          label: string
+          metric: string
+          sort_order: number
+          target: number
+          xp: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          description: string
+          label: string
+          metric: string
+          sort_order?: number
+          target: number
+          xp: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          description?: string
+          label?: string
+          metric?: string
+          sort_order?: number
+          target?: number
+          xp?: number
+        }
+        Relationships: []
+      }
       test_credit_nonces: {
         Row: {
           nonce: string
@@ -713,6 +929,32 @@ export type Database = {
           used_at?: string
         }
         Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          code: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_code_fkey"
+            columns: ["code"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -809,7 +1051,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      farm_leaderboard: {
+        Row: {
+          avatar_url: string | null
+          badges: number | null
+          display_name: string | null
+          level: number | null
+          rank: number | null
+          streak_count: number | null
+          user_id: string | null
+          xp: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_adjust_balance: {
@@ -934,6 +1188,20 @@ export type Database = {
         Args: { p_id: string; p_release: boolean; p_resolution?: string }
         Returns: undefined
       }
+      farm_award_xp: { Args: { _uid: string; _xp: number }; Returns: undefined }
+      farm_bump_quest: {
+        Args: { _amount?: number; _metric: string; _uid: string }
+        Returns: undefined
+      }
+      farm_care: {
+        Args: { p_action: string; p_cycle_id: string }
+        Returns: Json
+      }
+      farm_check_achievements: { Args: { _uid: string }; Returns: string[] }
+      farm_checkin: { Args: never; Returns: Json }
+      farm_ensure_profile: { Args: { _uid: string }; Returns: undefined }
+      farm_level_for_xp: { Args: { p_xp: number }; Returns: number }
+      farm_sync: { Args: never; Returns: Json }
       find_profile_by_handle: {
         Args: { handle: string }
         Returns: {
