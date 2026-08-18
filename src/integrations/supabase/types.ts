@@ -913,6 +913,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      assert_not_frozen: { Args: { _user_id: string }; Returns: undefined }
       escrow_accept: { Args: { p_id: string }; Returns: undefined }
       escrow_cancel: { Args: { p_id: string }; Returns: undefined }
       escrow_create: {
@@ -960,6 +961,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { uid: string }; Returns: boolean }
+      is_frozen: { Args: { _user_id: string }; Returns: boolean }
       is_username_available: { Args: { p_username: string }; Returns: boolean }
       kyc_submit: {
         Args: {
