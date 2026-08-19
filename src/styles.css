@@ -236,3 +236,41 @@
     animation: none;
   }
 }
+
+/* ---- Farm game --------------------------------------------------------- */
+@keyframes crop-sway {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+@keyframes crop-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes droplet-fall {
+  0% { transform: translateY(-8px); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(14px); opacity: 0; }
+}
+@keyframes ripe-glow {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(0 0 10px oklch(0.72 0.20 142 / 0.55)); }
+}
+
+@utility crop-sway {
+  transform-origin: 50% 100%;
+  animation: crop-sway 4.5s ease-in-out infinite;
+}
+@utility crop-pop {
+  animation: crop-pop 0.45s var(--transition-smooth) both;
+}
+@utility droplet {
+  animation: droplet-fall 0.9s ease-in forwards;
+}
+@utility ripe-glow {
+  animation: ripe-glow 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crop-sway, .crop-pop, .droplet, .ripe-glow { animation: none; }
+}
