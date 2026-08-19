@@ -53,11 +53,11 @@ export function CropArt({
 
         {stage >= 3 && (
           <g className="crop-pop">
-            <circle cx="32" cy="18" r={stage >= 4 ? 7 : 4.5} className={ripe ? "fill-chart-4" : "fill-primary/50"} />
+            <circle cx="32" cy="18" r={stage >= 4 ? 7 : 4.5} className={ripe ? "fill-gold" : "fill-primary/50"} />
             {ripe && (
               <>
-                <circle cx="23" cy="26" r="4" className="fill-chart-4/90" />
-                <circle cx="41" cy="26" r="4" className="fill-chart-4/90" />
+                <circle cx="23" cy="26" r="4" className="fill-gold/90" />
+                <circle cx="41" cy="26" r="4" className="fill-gold/90" />
               </>
             )}
           </g>
@@ -69,7 +69,7 @@ export function CropArt({
           {[18, 32, 46].map((x, i) => (
             <span
               key={x}
-              className="droplet absolute top-2 h-2 w-1 rounded-full bg-sky-400/80"
+              className="droplet absolute top-2 h-2 w-1 rounded-full bg-primary/70"
               style={{ left: `${x}%`, animationDelay: `${i * 0.12}s` }}
             />
           ))}
